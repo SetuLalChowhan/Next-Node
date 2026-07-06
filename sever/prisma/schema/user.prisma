@@ -1,0 +1,18 @@
+model User {
+  id              String    @id @default(uuid())
+  firstName       String
+  lastName        String
+  email           String    @unique
+  password        String
+  isVerified      Boolean   @default(false)
+  verificationToken String?
+  otpExpires      DateTime?
+  avatar          String?
+  role            String    @default("user") // "user" | "admin" | "superadmin"
+  displayName     String?
+  slug            String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("users")
+}

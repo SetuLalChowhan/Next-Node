@@ -1,0 +1,172 @@
+# Production Hosting & Deployment Documentation
+
+This document contains step-by-step instructions for server access, database management (backup/restore), Prisma Studio configuration, and deploying updates to production.
+
+---
+
+## 1. Server Credentials & Access Control
+
+### Root SSH Access
+Access the main server as root to perform administrative actions.
+* **Command:** `ssh root@<YOUR_SERVER_IP>`
+* **Password:** `<YOUR_ROOT_PASSWORD>`
+
+### CloudPanel Management Dashboard
+Use the CloudPanel to manage site configurations, domains, and server settings.
+* **URL:** `https://<YOUR_SERVER_IP>:8443/`
+* **Username:** `admin`
+* **Password:** `<YOUR_CLOUDPANEL_PASSWORD>`
+
+### Hosted Sites Overview
+Below are the credentials and links for the configured sites on the server:
+
+| Site | Domain / URL | System Username | Password |
+|---|---|---|---|
+| **Site 1: Admin Panel** | `http://admin.<YOUR_DOMAIN>.com` | `<yourdomain>-admin` | `<YOUR_ADMIN_SITE_PASSWORD>` |
+| **Site 2: Client Web** | `http://<YOUR_DOMAIN>.com` | `<yourdomain>` | `<YOUR_CLIENT_SITE_PASSWORD>` |
+| **Site 3: Backend API** | `https://api.<YOUR_DOMAIN>.com` | `<yourdomain>-api` | `<YOUR_API_SITE_PASSWORD>` |
+
+---
+
+## 2. File Paths and Server Directory Structure
+
+When logged into the server as a site-specific user or root, the web files are hosted in standard CloudPanel user home directories.
+
+### API Server Location
+* **System User:** `<yourdomain>-api`
+* **Absolute Path on Server:** `/home/<yourdomain>-api/htdocs/api.<YOUR_DOMAIN>.com`
+* **Build Outputs:** Distributed files are located in `/home/<yourdomain>-api/htdocs/api.<YOUR_DOMAIN>.com/dist` after compiling.
+
+---
+
+## 3. Database Management (PostgreSQL)
+
+### Local Database Setup (Windows/Mac/Linux)
+To set up your local PostgreSQL database to match production:
+1. Open your terminal or pgAdmin.
+2. Log into PostgreSQL as `postgres`:
+   ```bash
+   psql -U postgres
+   ```
+3. Create the database:
+   ```sql
+   CREATE DATABASE <your_db_name>;
+   ```
+4. Create the user and set their password:
+   ```sql
+   CREATE USER <your_db_user> WITH PASSWORD '<YOUR_DB_PASSWORD>';
+   ```
+5. Grant privileges to the user:
+   ```sql
+   GRANT ALL PRIVILEGES ON DATABASE <your_db_name> TO <your_db_user>;
+   ```
+6. (Optional) In PostgreSQL 15+, grant schema permissions after connecting:
+   ```sql
+   \c <your_db_name>
+   GRANT ALL ON SCHEMA public TO <your_db_user>;
+   ```
+
+### Creating Database Backups (Remote to File)
+To generate a `.sql` backup file of the production database:
+1. Log in to the server via SSH.
+2. Switch to the API user:
+   ```bash
+   su - <yourdomain>-api
+   ```
+3. Create the backup directory (if it doesn't exist):
+   ```bash
+   mkdir -p ~/backups
+   ```
+4. Dump the database structure and data:
+   ```bash
+   pg_dump -U <your_db_user> -h 127.0.0.1 <your_db_name> > ~/backups/backup_$(date +%Y%m%d_%H%M).sql
+   ```
+   * *When prompted, enter database password:* `<YOUR_DB_PASSWORD>`
+
+### Restoring Database Backups (Local or Remote)
+To restore a `.sql` backup to your Postgres database:
+* **Command:**
+  ```bash
+  psql -U <your_db_user> -h 127.0.0.1 -d <your_db_name> < ~/backups/backup_xxxxxx.sql
+  ```
+  *(Replace `backup_xxxxxx.sql` with your backup file's actual name)*
+* *When prompted, enter database password:* `<YOUR_DB_PASSWORD>`
+
+---
+
+## 4. Prisma Studio Access (Remote Database UI)
+
+You can inspect the production database using Prisma Studio through a secure SSH tunnel without exposing port `5555` to the public web.
+
+### Step 1: Start Prisma Studio on the Server
+1. SSH into the server as root or the API user.
+2. Run Prisma Studio bound to `localhost` on port `5555`:
+   ```bash
+   npx prisma studio --port 5555 --browser none
+   ```
+
+### Step 2: Establish the SSH Port-Forwarding Tunnel (On Your Local Machine)
+Run this command from your local machine's terminal to forward local port `5555` to the server's port `5555`:
+```bash
+ssh -L 5555:localhost:5555 <yourdomain>-api@<YOUR_SERVER_IP>
+```
+* **Enter Password:** `<YOUR_API_SITE_PASSWORD>`
+
+### Step 3: Open in Browser
+Open your local web browser and navigate to:
+* **URL:** [http://localhost:5555](http://localhost:5555)
+
+---
+
+## 5. Step-by-Step Production Deployment Guide
+
+Follow these exact steps whenever you upload new code, change the database schema, or update dependencies.
+
+### Step 1: Access the Server
+Log into the server and switch to the API user:
+```bash
+ssh root@<YOUR_SERVER_IP>
+su - <yourdomain>-api
+```
+
+### Step 2: Navigate to Project Directory
+```bash
+cd htdocs/api.<YOUR_DOMAIN>.com
+```
+
+### Step 3: Pull New Code / Upload Files
+If using Git:
+```bash
+git pull origin main
+```
+*(Or upload your updated files manually using an SFTP client like FileZilla logged in as `<yourdomain>-api`)*
+
+### Step 4: Install Dependencies
+Install any newly added packages from your updated `package.json`:
+```bash
+npm install
+```
+
+### Step 5: Regenerate Prisma Client
+Generate the type-safe Prisma client:
+```bash
+npx prisma generate
+```
+
+### Step 6: Deploy Database Migrations (If Schema Changed)
+Apply database updates to production safely without losing data:
+```bash
+npx prisma migrate deploy
+```
+
+### Step 7: Build the Application
+Compile TypeScript code to JavaScript (this will trigger `npx prisma generate && tsc -p tsconfig.json`):
+```bash
+npm run build
+```
+
+### Step 8: Restart the Server Application
+Restart the running Node.js process using PM2 to apply the build updates:
+```bash
+pm2 restart <api-process-name>
+```
