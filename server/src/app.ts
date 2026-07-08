@@ -52,8 +52,8 @@ app.use(errorMiddleware);
 export async function startServer(): Promise<void> {
   const PORT = process.env.PORT || 5000;
   try {
-    // Verify database connection connectivity on startup
-    await prisma.$connect();
+    // Verify database connection connectivity on startup by running a simple query
+    await prisma.$queryRaw`SELECT 1`;
     console.log("DB connection established successfully! 🔌");
 
     // Run seed files
