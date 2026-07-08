@@ -1,53 +1,76 @@
-import React, { useEffect, useState } from "react";
-import { Outlet, ScrollRestoration, useLocation } from "react-router-dom";
-import CommonNavbar from "../pages/admin/CommonNavbar";
-import SideBar, { type SidebarItem } from "../pages/admin/SideBar";
-import { MdDashboard } from "react-icons/md";
-import useUserProfile from "@/hooks/fetchUserProfile";
+import React, { useEffect, useState } from "react"
+import { Outlet, ScrollRestoration, useLocation } from "react-router-dom"
+import CommonNavbar from "../pages/admin/CommonNavbar"
+import SideBar, { type SidebarItem } from "../pages/admin/SideBar"
+import { LayoutDashboard, Settings, Layers } from "lucide-react"
+import useUserProfile from "@/hooks/fetchUserProfile"
 
 const AdminLayout: React.FC = () => {
-    useUserProfile();
-  const [open, setOpen] = useState(false);
-  const location = useLocation();
+  // Sync profile data
+  useUserProfile()
 
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const location = useLocation()
+
+  // Scroll to top on navigation changes
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [location]);
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }, [location.pathname])
 
-  const sideBar: SidebarItem[] = [
+  const sidebarNavigation: SidebarItem[] = [
     {
       id: 1,
-      icon: <MdDashboard />,
+      icon: <LayoutDashboard className="h-5 w-5" />,
       text: "Dashboard",
       path: "/dashboard",
-      activePaths: ["/dashboard", "/dashboard/settings", "/dashboard/analytics"],
+      activePaths: ["/dashboard"],
     },
     {
       id: 2,
-      icon: <MdDashboard />,
-      text: "Admin Management",
-      path: "/dashboard/admin-list",
+      icon: <Layers className="h-5 w-5" />,
+      text: "Components Showcase",
+      path: "/dashboard/showcase",
+      activePaths: ["/dashboard/showcase"],
+    },
+    {
+      id: 3,
+      icon: <Settings className="h-5 w-5" />,
+      text: "Settings",
+      path: "/dashboard/settings/profile",
+      activePaths: [
+        "/dashboard/settings",
+        "/dashboard/settings/profile",
+        "/dashboard/settings/security",
+      ],
       sublink: [
-        { id: 1, text: "Admin List", path: "/dashboard/admin-list" },
-        { id: 2, text: "Add New Admin", path: "/dashboard/asdasd" },
+        { id: 1, path: "/dashboard/settings/profile", text: "Profile Settings" },
+        { id: 2, path: "/dashboard/settings/security", text: "Security Credentials" },
       ],
     },
-  ];
+  ]
 
   return (
     <>
       <ScrollRestoration />
-      <div className="flex h-screen min-h-screen w-full">
-        <SideBar open={open} setOpen={setOpen} sidebar={sideBar} />
-        <div className="flex-1 bg-dark text-white flex flex-col overflow-auto custom-scrollbar">
-          <div className="flex flex-col lg:gap-10 gap-5 lg:py-6 py-3 lg:px-[30px] px-2.5 sm:px-5">
-            <CommonNavbar open={open} setOpen={setOpen} />
-            <Outlet />
-          </div>
+      <div className="flex h-screen w-screen overflow-hidden bg-background text-foreground">
+        {/* Sidebar wrapper */}
+        <SideBar open={sidebarOpen} setOpen={setSidebarOpen} sidebar={sidebarNavigation} />
+
+        {/* Content Shell */}
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+          {/* Top Navbar */}
+          <CommonNavbar open={sidebarOpen} setOpen={setSidebarOpen} />
+
+          {/* Core scrollable viewport - Full Width */}
+          <main className="flex-1 overflow-y-auto px-4 md:px-8 py-6 bg-muted/20">
+            <div className="w-full space-y-6">
+              <Outlet />
+            </div>
+          </main>
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default AdminLayout;
+export default AdminLayout

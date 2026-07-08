@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import DashNavbar from "@/components/dashboard/common/DashNavbar";
 import SideBar, { type SidebarItem } from "@/components/dashboard/common/SideBar";
-import { MdDashboard } from "react-icons/md";
+import { LayoutDashboard, UserCog } from "lucide-react";
 import useUserProfile from "@/api/hooks/useUserProfile";
 
 interface DashboardLayoutProps {
@@ -23,14 +23,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const sideBarItems: SidebarItem[] = [
     {
       id: 1,
-      icon: <MdDashboard />,
+      icon: <LayoutDashboard className="h-5 w-5" />,
       text: "Dashboard",
       path: "/dashboard",
       activePaths: ["/dashboard", "/dashboard/settings", "/dashboard/analytics"],
     },
     {
       id: 2,
-      icon: <MdDashboard />,
+      icon: <UserCog className="h-5 w-5" />,
       text: "Admin Management",
       path: "/dashboard/admin-list",
       sublink: [
@@ -41,13 +41,15 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   ];
 
   return (
-    <div className="flex h-screen min-h-screen w-full">
+    <div className="flex h-screen min-h-screen w-full bg-background text-foreground overflow-hidden">
       <SideBar open={open} setOpen={setOpen} sidebar={sideBarItems} />
-      <div className="flex-1 bg-white text-black flex flex-col overflow-auto custom-scrollbar">
-        <div className="flex flex-col lg:gap-10 gap-5 lg:py-6 py-3 lg:px-[30px] px-2.5 sm:px-5">
-          <DashNavbar open={open} setOpen={setOpen} />
-          {children}
-        </div>
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <DashNavbar open={open} setOpen={setOpen} />
+        <main className="flex-1 overflow-y-auto px-4 md:px-8 py-6 bg-muted/20">
+          <div className="w-full space-y-6">
+            {children}
+          </div>
+        </main>
       </div>
     </div>
   );

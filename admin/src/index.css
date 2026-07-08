@@ -1,18 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
-
 @theme {
   /* font */
-  --font-roboto: "Roboto", sans-serif;;
-  --font-roboto:  "Geist", sans-serif;
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+  --font-mono: "Geist Mono", monospace;
 
   /* color */
-
-  --color-primary: green;
-  --color-bg-custom: linear-gradient(red, yellow);
+  --color-primary: var(--primary);
+  --color-bg-custom: linear-gradient(135deg, var(--background) 0%, var(--muted) 100%);
 
   /* breakpoint */
   --breakpoint-xxs: 390px;
@@ -167,7 +166,8 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
   }
 }
