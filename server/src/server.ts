@@ -1,13 +1,14 @@
 import "dotenv/config";
 
-import { startServer } from "./app.js";
-
-// Handle uncaught exceptions globally
+// Handle uncaught exceptions globally (registered immediately at startup)
 process.on("uncaughtException", (err) => {
   console.error("UNCAUGHT EXCEPTION! 💥 Shutting down...");
   console.error(err.name, err.message, err.stack);
   process.exit(1);
 });
 
-// Launch server connection lifecycle
-startServer();
+import { app } from "./app.js";
+import { startApp } from "./utils/bootstrap.js";
+
+// Launch Express server lifecycle
+startApp(app);
