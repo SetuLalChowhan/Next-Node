@@ -1,0 +1,197 @@
+# Next.js Project — Mandatory AI Development Rules
+
+You are working on a production-quality Next.js project.
+
+For EVERY task, feature, bug fix, refactor, UI change, API integration, or performance improvement, you MUST consider and apply the installed skills below where relevant.
+
+## Mandatory Skills
+
+### 1. Next Dev Loop — ALWAYS USE
+
+After making changes:
+
+* Run the application.
+* Check runtime/server logs.
+* Check for build errors.
+* Check browser console errors.
+* Inspect the affected page using the browser/agent tools.
+* Test the actual user flow.
+* Verify that the implementation works instead of assuming it works.
+* Fix discovered issues before finishing.
+
+Never consider a task complete based only on successful code generation.
+
+### 2. Cache Components — ALWAYS CONSIDER
+
+For every page/component:
+
+* Decide whether the content can be statically rendered or cached.
+* Use the appropriate Next.js caching architecture.
+* Avoid unnecessary dynamic rendering.
+* Avoid unnecessary client components.
+* Use `use cache` where appropriate.
+* Use Suspense for dynamic/streaming content when beneficial.
+* Do not introduce caching blindly where fresh data is required.
+
+### 3. Optimizer Skill — ALWAYS CONSIDER
+
+For every implementation:
+
+* Optimize the static shell.
+* Maximize build-time rendering where possible.
+* Minimize unnecessary JavaScript.
+* Avoid unnecessary client-side state.
+* Keep server components as the default.
+* Optimize images and fonts.
+* Avoid unnecessary dependencies.
+* Ensure navigation feels instant.
+
+### 4. Partial Prefetching — ALWAYS CONSIDER
+
+For navigation and routing:
+
+* Follow modern Next.js partial prefetching behavior.
+* Avoid unnecessary prefetching.
+* Do not over-fetch data or resources.
+* Consider the size and frequency of navigated routes.
+* Verify navigation behavior in the browser.
+
+### 5. Shadcn UI — ALWAYS USE FOR UI
+
+When a suitable Shadcn component exists:
+
+* Use the existing Shadcn component.
+* Do not invent a replacement component unnecessarily.
+* Do not hallucinate Shadcn components.
+* Maintain the existing design system.
+* Reuse existing components before creating new ones.
+* Keep spacing, typography, variants, and interaction patterns consistent.
+
+Before creating a new UI component, check whether an existing component can be reused or composed.
+
+### 6. Impeccable — ALWAYS CONSIDER FOR UI
+
+The UI must NOT look like generic AI-generated UI.
+
+Avoid:
+
+* Excessive gradients
+* Random rounded cards
+* Excessive glassmorphism
+* Generic purple/blue AI aesthetics
+* Unnecessary animations
+* Excessive badges
+* Repetitive card layouts
+* Huge unnecessary headings
+* Poor spacing
+* Visual clutter
+* Inconsistent typography
+
+Prioritize:
+
+* Strong visual hierarchy
+* Consistent spacing
+* Professional typography
+* Purposeful whitespace
+* Clear interaction states
+* Responsive layouts
+* Appropriate visual density
+* Human-designed visual patterns
+
+Before finishing a UI task, inspect the actual rendered result and improve anything that looks generic or artificial.
+
+### 7. SEO Skill — ALWAYS APPLY
+
+For every public-facing page:
+
+* Add a unique title.
+* Add a useful meta description.
+* Configure appropriate Open Graph metadata.
+* Configure Twitter/X metadata where appropriate.
+* Use canonical URLs where appropriate.
+* Use semantic HTML.
+* Maintain proper H1/H2/H3 hierarchy.
+* Add meaningful image alt text.
+* Optimize images.
+* Check internal linking.
+* Check indexability.
+* Configure robots.txt when required.
+* Configure sitemap.xml when required.
+* Add structured data/JSON-LD where appropriate.
+* Use dynamic metadata for dynamic pages.
+* Avoid duplicate titles and descriptions.
+* Avoid unnecessary client rendering for SEO-critical content.
+
+Do not add meaningless keyword stuffing.
+
+## Production QA — REQUIRED
+
+Every completed task must go through this process:
+
+1. Understand the existing architecture.
+2. Inspect relevant files/components before modifying them.
+3. Reuse existing components and utilities.
+4. Implement the smallest clean solution.
+5. Run lint/type checks/build where applicable.
+6. Start/run the application.
+7. Inspect runtime logs.
+8. Test the affected functionality in the browser.
+9. Check responsive behavior.
+10. Check browser console/network errors.
+11. Check loading, empty, and error states.
+12. Check SEO for affected public pages.
+13. Check performance implications.
+14. Fix all discovered issues.
+15. Re-test after fixes.
+16. Only then report the task as complete.
+
+## Error Handling
+
+Never ignore errors.
+
+For API requests, consider:
+
+* Loading state
+* Success state
+* Empty state
+* Validation errors
+* Authentication errors
+* Permission errors
+* Server errors
+* Network errors
+* Retry behavior
+* User-friendly error messages
+
+For UI:
+
+* Prevent broken layouts.
+* Handle missing data.
+* Handle slow requests.
+* Handle failed images.
+* Handle unexpected API responses.
+
+## Existing Project Rules
+
+Before changing architecture:
+
+* Inspect the existing implementation.
+* Follow the project's current conventions.
+* Do not rewrite working code unnecessarily.
+* Do not introduce a new library when an existing dependency solves the problem.
+* Do not change unrelated files.
+* Do not remove existing functionality.
+
+## Completion Requirement
+
+When you finish a task, do NOT simply say "implemented."
+
+Report:
+
+* What was changed
+* What was tested
+* Any errors found and fixed
+* Build/type/lint status
+* Browser verification status
+* Any remaining concerns
+
+The final implementation must be production-ready, visually polished, performant, SEO-friendly, and verified in the actual running application.
